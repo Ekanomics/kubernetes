@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+spec:
+  replicas: 4
+  selector:
+    matchLabels:          # Equality based selector (basic) =, !=
+      tier: frontend
+      app: nginx
+  template:               # pod template
+    metadata:
+      labels:
+        tier: frontend
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+
+---
+# MatchExpression
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: backend
+spec:
+  replicas: 4
+  selector:
+    matchExpressions:     # ReplicaSet will manage Pods that has a label "app" with values of either web or api
+      - key: app
+        operator: In
+        values:
+          - web
+          - api
+      - key: stage        # ReplicaSet will manage Pods that do not have stage: dev
+        operator: NotIn
+        values:
+          - dev
+  template:               # pod template
+    metadata:
+      labels:
+        app: web
+        stage: prod
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+
+# Multi Tenancy and Multi Environment
