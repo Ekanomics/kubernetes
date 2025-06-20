@@ -1,0 +1,20 @@
+#  Create a Pod with httpd image, use the same persistentvolume claim, mount it at /data
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backup-pod
+spec:
+  volumes:
+    - name: backup-storage
+      persistentVolumeClaim:
+        claimName: app-volume-claim
+  containers:
+    - name: backup-container
+      image: httpd
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:
+        - mountPath: "/data"
+          name: backup-storage

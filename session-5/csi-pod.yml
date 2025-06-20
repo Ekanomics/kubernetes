@@ -1,0 +1,18 @@
+#  Create a Pod with httpd image, use the same persistentvolume claim, mount it at /data
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-pod
+spec:
+  volumes:
+    - name: csi-storage
+      persistentVolumeClaim:
+        claimName: app-volume-claim-csi
+  containers:
+    - name: csi-container
+      image: busybox
+      command: [ "sh", "-c", "echo Hello from Kubernetes PV > /data/hello.txt && sleep 3600" ]
+      volumeMounts:
+        - mountPath: "/data"
+          name: csi-storage
